@@ -19,9 +19,12 @@
   	let chatters = {};
     const params = new URLSearchParams( location.search );
 
-    const sfx = document.getElementById("alert-sfx");
+    const sfx = document.getElementById( "alert-sfx" );
     sfx.volume = params.get( "volume" ) ? parseFloat( params.get( "volume" ) ) : 0.5;
-  
+    if( params.get( "src" ) ) {
+      sfx.setAttribute( "src", params.get( "src" ) );
+    }
+
     function isNewChatter( user ) {
       const isNew = !chatters[ user ];
       try {
