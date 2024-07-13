@@ -1,0 +1,59 @@
+<html>
+
+<head>
+  <title>NewChatterAlert - Play a sound anytime there's a new Twitch Chat Viewer!</title>
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-135113520-1"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'UA-135113520-1');
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/comfy.js@latest/dist/comfy.min.js"></script>
+</head>
+
+<body>
+  <audio id="alert-sfx" autoplay src="public/alert.wav"></audio>
+  <script>
+  	let chatters = {};
+    const params = new URLSearchParams( location.search );
+
+    const sfx = document.getElementById("alert-sfx");
+    sfx.volume = params.get( "volume" ) ? parseFloat( params.get( "volume" ) ) : 0.5;
+  
+    function isNewChatter( user ) {
+      const isNew = !chatters[ user ];
+      try {
+        chatters[ user ] = ( chatters[ user ] || 0 ) + 1;
+        // console.log( `${user} is new? ${isNew}` );
+        if( isNew ) {
+          sfx.play();
+        }
+      }
+      catch( err ) {
+        console.error( err );
+      }
+      return isNew;
+    }
+
+    ComfyJS.onChat = ( user, message, flags, self, extra ) => {
+      isNewChatter( user );
+    };
+    ComfyJS.onCommand = ( user, command, message, flags, extra ) => {
+      isNewChatter( user );
+    };
+    ComfyJS.onCheer = ( user, message, bits, flags, extra ) => {
+      isNewChatter( user );
+    };
+    ComfyJS.onSub = ( user, message, subTierInfo, extra ) => {
+      isNewChatter( user );
+    }
+    ComfyJS.onResub = ( user, message, streamMonths, cumulativeMonths, subTierInfo, extra ) => {
+      isNewChatter( user );
+    }
+    ComfyJS.Init( params.get( "channel" ) );
+  </script>
+</body>
+
+</html>
